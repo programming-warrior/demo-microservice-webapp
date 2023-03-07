@@ -1,15 +1,18 @@
 const express=require('express');
 const app=express();
 const {randomBytes}=require('crypto');
+const cors=require('cors');
 
 const comments={
     //'postId':['commentId':'title'],
 }
 
 app.use(express.json());
+app.use(cors());
 
 app.get('/posts/:id/comments',(req,res)=>{
-    res.send(comments[req.params.id]);
+    const response=comments[req.params.id] || [];
+    res.send(response);
 })
 
 app.post('/posts/:id/comments',(req,res)=>{
@@ -23,8 +26,8 @@ app.post('/posts/:id/comments',(req,res)=>{
         commentId,
         title,
     })
-
     comments[postId]=newComment;
+    console.log(comments);
 
     res.status(201).send(comments[postId]);
 })  
