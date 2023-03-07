@@ -8,7 +8,8 @@ const PostList=()=>{
 
     //fetching all the posts
     const getPosts=async()=>{
-        const res=await axios.get('http://localhost:8000/posts');
+        const res=await axios.get('http://localhost:8002/posts');
+ 
         setPosts(res.data);
     }
 
@@ -17,7 +18,7 @@ const PostList=()=>{
     },[]);
 
    const renderedPosts=Object.values(posts).map((post)=>{
-        return <PostCard title={post['title'] } id={post['id']}/>
+        return <PostCard title={post['title'] } id={post['id']} comments={post['comments']} key={post.id}  />
    })
  
     return(
