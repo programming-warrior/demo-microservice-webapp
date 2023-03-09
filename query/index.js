@@ -25,10 +25,24 @@ app.post('/events',(req,res)=>{
         const comments=posts[req.body.data.postId].comments || [];
         comments.push({
             id:req.body.data.id,
-            content:req.body.data.content
+            content:req.body.data.content,
+            status:req.body.data.status,
         });
         posts[req.body.data.postId].comments=comments;
     }
+
+    if(eventType=='CommentUpdated'){
+        const {postId,id,content,status}=req.body.data;
+        const comment=posts[postId].comments.find((comment)=>{
+            return comment.id==id;
+        })
+        comment.status=status;
+        comment.content=content;
+        comment.id=id;
+        console.log(posts[postId].comments[id]);
+        posts[postId].comments[id]=comment;
+    }
+
     res.send({});
 })
 
