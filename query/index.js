@@ -1,6 +1,7 @@
 const express=require('express');
 const app=express();
 const cors=require('cors');
+const axios=require('axios');
 
 app.use(cors());
 app.use(express.json());
@@ -9,30 +10,26 @@ const posts={
     
 }
 
-app.get('/posts',(req,res)=>{
-    res.send(posts);
-})
-
-app.post('/events',(req,res)=>{
-    const eventType=req.body.type;
+const handleEvent=(type,data)=>{
+    const eventType=type;
     if(eventType=='PostCreated'){
-        posts[req.body.data.id]={};
-        posts[req.body.data.id].id=req.body.data.id;
-        posts[req.body.data.id].title=req.body.data.title;
-        posts[req.body.data.id].comments=[];
+        posts[data.id]={};
+        posts[data.id].id=data.id;
+        posts[data.id].title=data.title;
+        posts[data.id].comments=[];
     }
     if(eventType=='CommentCreated'){
-        const comments=posts[req.body.data.postId].comments || [];
+        const comments=posts[data.postId].comments || [];
         comments.push({
-            id:req.body.data.id,
-            content:req.body.data.content,
-            status:req.body.data.status,
+            id:data.id,
+            content:data.content,
+            status:data.status,
         });
-        posts[req.body.data.postId].comments=comments;
+        posts[data.postId].comments=comments;
     }
 
     if(eventType=='CommentUpdated'){
-        const {postId,id,content,status}=req.body.data;
+        const {postId,id,content,status}=data;
         const comment=posts[postId].comments.find((comment)=>{
             return comment.id==id;
         })
@@ -42,10 +39,28 @@ app.post('/events',(req,res)=>{
         console.log(posts[postId].comments[id]);
         posts[postId].comments[id]=comment;
     }
+}
 
+app.get('/posts',(req,res)=>{
+    res.send(posts);
+})
+
+app.post('/events',(req,res)=>{
+    const {type,data}=req.body;
+    handleEvent(type,data);
     res.send({});
 })
 
-app.listen(8002,()=>{
+app.listen(8002,async()=>{
     console.log('app is listening on port 8002');
+    try{
+        const res=await axios.get('http://localhost:8005/events');
+        res.data.forEach(event=>{
+            handleEvent(event.type,event.data);
+        })
+    }
+    catch(e){
+        console.log(e);
+    }
+   
 })

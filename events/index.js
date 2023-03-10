@@ -4,19 +4,33 @@ const axios=require('axios');
 
 app.use(express.json());
 
+const events=[];
 
-app.post('/events',(req,res)=>{
+app.post('/events',async(req,res)=>{
     const event=req.body;
-    //post
-    axios.post('http://localhost:8000/events',event)
-    //comment
-    axios.post('http://localhost:8001/events',event);
-    //query
-    axios.post('http://localhost:8002/events',event);
-    //moderation
-    axios.post('http://localhost:8003/events',event);
+    events.push(event);
+    try{
+        //post
+        const p1=axios.post('http://localhost:8000/events',event)
+        //comment
+        const p2=axios.post('http://localhost:8001/events',event);
+        //query
+        const p3=axios.post('http://localhost:8002/events',event);
+        //moderation
+        const p4=axios.post('http://localhost:8003/events',event);
 
-    res.send({"status":"ok"});
+        await Promise.all([p1,p2,p3,p4]);
+
+        res.send({"status":"ok"});
+    }
+    catch(e){
+        console.log(e);
+    }
+
+})
+
+app.get('/events',(req,res)=>{
+    res.send(events);
 })
 
 
