@@ -8,10 +8,11 @@ app.post('/events',async(req,res)=>{
 
     const {type,data}=req.body;
     if(type=='CommentCreated'){
+        console.log('comment-created event');
         //comment should not contain the word orange
         const status=data.content.indexOf('orange')>-1 ? 'rejected' : 'approved';
 
-        await axios.post('http://localhost:8005/events',{
+        axios.post('http://localhost:8005/events',{
             type:'CommentModerated',
             data:{
                 status,

@@ -11,15 +11,15 @@ app.post('/events',async(req,res)=>{
     events.push(event);
     try{
         //post
-        const p1=axios.post('http://localhost:8000/events',event)
+       axios.post('http://localhost:8000/events',event)
         //comment
-        const p2=axios.post('http://localhost:8001/events',event);
+         axios.post('http://localhost:8001/events',event);
         //query
-        const p3=axios.post('http://localhost:8002/events',event);
-        //moderation
-        const p4=axios.post('http://localhost:8003/events',event);
+         axios.post('http://localhost:8002/events',event).catch(()=>{})
+         //moderation
+         axios.post('http://localhost:8003/events',event);
 
-        await Promise.all([p1,p2,p3,p4]);
+        // Promise.all([p1,p2,p3,p4]);
 
         res.send({"status":"ok"});
     }
