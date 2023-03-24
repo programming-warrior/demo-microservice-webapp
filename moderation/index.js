@@ -29,5 +29,6 @@ app.post('/events',async(req,res)=>{
 
 
 app.listen(8003,()=>{
+    console.log('latest version');
     console.log('listening on port 8003');
 })
